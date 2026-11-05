@@ -1,0 +1,9 @@
+{
+  "name": "taskflow",
+  "private": true,
+  "scripts": {
+    "test": "make test",
+    "test:backend": "make test-backend",
+    "test:frontend": "make test-frontend"
+  }
+}
