@@ -62,12 +62,31 @@ Open http://localhost:5173 (click **Use demo account** on the login page if you 
 
 ## Tests and lint
 
-```bash
-# backend
-cd backend && pytest -q && ruff check .
+From the repository root, or from `taskflow/`:
 
-# frontend
-cd frontend && npm test && npm run build
+```bash
+make test            # backend (pytest) and frontend (vitest)
+make test-backend    # pytest -q in backend/
+make test-frontend   # npm test in frontend/
+make lint            # ruff check in backend/
+```
+
+The same commands are available as npm scripts inside `taskflow/`:
+
+```bash
+cd taskflow
+npm test
+npm run test:backend
+npm run test:frontend
+```
+
+Backend tests use `backend/.venv` when that virtualenv exists, otherwise `python3`. Create it once before the first run:
+
+```bash
+cd backend
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cd ../frontend && npm install
 ```
 
 ## API overview
@@ -98,6 +117,6 @@ Task ordering: unfinished before done, then high → low priority, then earliest
 ## Using it with a PR-review / bug-fixing agent
 
 - Small, layered codebase (routers → dependencies → models) with real authorization checks, so reviewers have meaningful logic to reason about (ownership checks, partial updates, null handling, date logic).
-- Both sides have automated tests, so a bug-fix agent can validate its changes: `pytest` for the backend, `npm test` for the frontend.
+- Both sides have automated tests, so a bug-fix agent can validate its changes: `make test-backend` (pytest) and `make test-frontend` (`npm test`). `make test` runs both.
 - Good places to inject bugs or make PRs against: `routers/tasks.py` (filters, sorting, stats), `security.py` (token handling), `utils.js` (`isOverdue`, `nextStatus`), `Dashboard.jsx` (refresh / debounce logic).
 - Tip: introduce a bug on a branch, confirm a test fails, then let the agent fix it.
